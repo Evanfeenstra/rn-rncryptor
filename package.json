@@ -1,6 +1,6 @@
 
 {
-  "name": "react-native-rncryptor",
+  "name": "rn-rncryptor",
   "version": "1.0.0",
   "description": "React Native RNCryptor",
   "main": "index.js",
@@ -13,12 +13,12 @@
     "rncryptor",
     "crypto"
   ],
-  "author": "richfisher",
+  "author": "evanfeenstra",
   "license": "MIT",
   "peerDependencies": {
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:richfisher/react-native-rncryptor-aes-256.git"
+    "url": "git@github.com:Evanfeenstra/rn-rncryptor.git"
   }
 }
