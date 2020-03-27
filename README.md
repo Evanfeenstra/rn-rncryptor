@@ -8,12 +8,6 @@ It's an easy-to-use library for encrypting data with AES 256 in React Native. [R
 [Javascript](https://github.com/RNCryptor/rncryptor-js),
 and [Ruby](https://github.com/RNCryptor/ruby_rncryptor).
 
-## Getting started
-
-`$ npm install react-native-rncryptor --save`
-
-`$ react-native link react-native-rncryptor`
-
 ## Usage
 ```javascript
 import RNCryptor from 'react-native-rncryptor';
