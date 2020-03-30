@@ -13,7 +13,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-
+import android.net.Uri;
+import java.io.File;
 
 public class RNRncryptorModule extends ReactContextBaseJavaModule {
 
@@ -94,12 +95,13 @@ public class RNRncryptorModule extends ReactContextBaseJavaModule {
       InputStream inputStream = getInputStream(filepath);
       byte[] inputData = getInputStreamBytes(inputStream);
       
+      JNCryptor cryptor = new AES256JNCryptor();
       byte[] text = cryptor.decryptData(inputData, password.toCharArray());
       String b64 = Base64.encodeToString(text, Base64.DEFAULT);
       promise.resolve(b64);
     } catch (Exception ex) {
       ex.printStackTrace();
-      reject(promise, filepath, ex);
+      filereject(promise, filepath, ex);
     }
   }
 
@@ -114,7 +116,7 @@ public class RNRncryptorModule extends ReactContextBaseJavaModule {
       promise.resolve(base64Content);
     } catch (Exception ex) {
       ex.printStackTrace();
-      reject(promise, filepath, ex);
+      filereject(promise, filepath, ex);
     }
   }
 
@@ -151,4 +153,49 @@ public class RNRncryptorModule extends ReactContextBaseJavaModule {
     }
     return bytesResult;
   }
+
+  private Uri getFileUri(String filepath, boolean isDirectoryAllowed) throws IORejectionException {
+    Uri uri = Uri.parse(filepath);
+    if (uri.getScheme() == null) {
+      // No prefix, assuming that provided path is absolute path to file
+      File file = new File(filepath);
+      if (!isDirectoryAllowed && file.isDirectory()) {
+        throw new IORejectionException("EISDIR", "EISDIR: illegal operation on a directory, read '" + filepath + "'");
+      }
+      uri = Uri.parse("file://" + filepath);
+    }
+    return uri;
+  }
+
+  private void filereject(Promise promise, String filepath, Exception ex) {
+    if (ex instanceof FileNotFoundException) {
+      rejectFileNotFound(promise, filepath);
+      return;
+    }
+    if (ex instanceof IORejectionException) {
+      IORejectionException ioRejectionException = (IORejectionException) ex;
+      promise.reject(ioRejectionException.getCode(), ioRejectionException.getMessage());
+      return;
+    }
+
+    promise.reject(null, ex.getMessage());
+  }
+
+  private void rejectFileNotFound(Promise promise, String filepath) {
+    promise.reject("ENOENT", "ENOENT: no such file or directory, open '" + filepath + "'");
+  }
+
+}
+
+class IORejectionException extends Exception {
+    private String code;
+
+    public IORejectionException(String code, String message) {
+        super(message);
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
 }
