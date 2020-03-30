@@ -61,6 +61,22 @@ public class RNRncryptorModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void encryptFile(String filepath, String password, Promise promise) {
+    try {
+      InputStream inputStream = getInputStream(filepath);
+      byte[] inputData = getInputStreamBytes(inputStream);
+      
+      JNCryptor cryptor = new AES256JNCryptor();
+      byte[] text = cryptor.encryptData(inputData, password.toCharArray());
+      String b64 = Base64.encodeToString(text, Base64.DEFAULT);
+      promise.resolve(b64);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      filereject(promise, filepath, ex);
+    }
+  }
+
+  @ReactMethod
   public void decrypt(String encrypted, String password, Promise promise) {
     JNCryptor cryptor = new AES256JNCryptor();
     byte[] data = Base64.decode(encrypted, Base64.DEFAULT);
