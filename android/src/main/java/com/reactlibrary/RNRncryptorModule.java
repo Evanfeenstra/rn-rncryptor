@@ -13,6 +13,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import android.net.Uri;
 import java.io.File;
 
@@ -121,6 +122,26 @@ public class RNRncryptorModule extends ReactContextBaseJavaModule {
     }
   }
 
+  @ReactMethod
+  public void decryptFileAndSave(String filepath, String password, Promise promise) {
+    try {
+      InputStream inputStream = getInputStream(filepath);
+      byte[] inputData = getInputStreamBytes(inputStream);
+      
+      JNCryptor cryptor = new AES256JNCryptor();
+      byte[] bytes = cryptor.decryptData(inputData, password.toCharArray());
+      
+      String newpath = filepath+"_decrypted"
+      OutputStream outputStream = getOutputStream(newpath, false);
+      outputStream.write(bytes);
+      outputStream.close();
+      promise.resolve(newpath);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      filereject(promise, filepath, ex);
+    }
+  }
+
   // https://github.com/itinance/react-native-fs/blob/master/android/src/main/java/com/rnfs/RNFSManager.java
   @ReactMethod
   public void readFile(String filepath, Promise promise) {
@@ -168,6 +189,20 @@ public class RNRncryptorModule extends ReactContextBaseJavaModule {
       }
     }
     return bytesResult;
+  }
+
+  private OutputStream getOutputStream(String filepath, boolean append) throws IORejectionException {
+    Uri uri = getFileUri(filepath, false);
+    OutputStream stream;
+    try {
+      stream = reactContext.getContentResolver().openOutputStream(uri, append ? "wa" : "w");
+    } catch (FileNotFoundException ex) {
+      throw new IORejectionException("ENOENT", "ENOENT: " + ex.getMessage() + ", open '" + filepath + "'");
+    }
+    if (stream == null) {
+      throw new IORejectionException("ENOENT", "ENOENT: could not open an output stream for '" + filepath + "'");
+    }
+    return stream;
   }
 
   private Uri getFileUri(String filepath, boolean isDirectoryAllowed) throws IORejectionException {
