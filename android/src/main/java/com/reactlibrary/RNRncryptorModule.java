@@ -131,7 +131,7 @@ public class RNRncryptorModule extends ReactContextBaseJavaModule {
       JNCryptor cryptor = new AES256JNCryptor();
       byte[] bytes = cryptor.decryptData(inputData, password.toCharArray());
       
-      String newpath = filepath+"_decrypted"
+      String newpath = filepath+"_decrypted";
       OutputStream outputStream = getOutputStream(newpath, false);
       outputStream.write(bytes);
       outputStream.close();
