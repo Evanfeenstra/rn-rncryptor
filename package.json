@@ -1,7 +1,7 @@
 
 {
   "name": "rn-rncryptor",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "React Native RNCryptor",
   "main": "index.js",
   "scripts": {
