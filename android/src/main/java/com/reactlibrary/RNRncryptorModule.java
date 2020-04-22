@@ -123,7 +123,7 @@ public class RNRncryptorModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void decryptFileAndSave(String filepath, String password, Promise promise) {
+  public void decryptFileAndSave(String filepath, String password, String extension, Promise promise) {
     try {
       InputStream inputStream = getInputStream(filepath);
       byte[] inputData = getInputStreamBytes(inputStream);
@@ -132,10 +132,38 @@ public class RNRncryptorModule extends ReactContextBaseJavaModule {
       byte[] bytes = cryptor.decryptData(inputData, password.toCharArray());
       
       String newpath = filepath+"_decrypted";
+      if(extension != null && !extension.isEmpty()) {
+        newpath += "." + extension;
+      }
       OutputStream outputStream = getOutputStream(newpath, false);
       outputStream.write(bytes);
       outputStream.close();
       promise.resolve(newpath);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      filereject(promise, filepath, ex);
+    }
+  }
+
+  @ReactMethod
+  public void decryptFileAndSaveReturningContent(String filepath, String password, String extension, Promise promise) {
+    try {
+      InputStream inputStream = getInputStream(filepath);
+      byte[] inputData = getInputStreamBytes(inputStream);
+      
+      JNCryptor cryptor = new AES256JNCryptor();
+      byte[] bytes = cryptor.decryptData(inputData, password.toCharArray());
+      String ret = new String(bytes);
+
+      String newpath = filepath+"_decrypted";
+      if(extension != null && !extension.isEmpty()) {
+        newpath += "." + extension;
+      }
+      OutputStream outputStream = getOutputStream(newpath, false);
+      outputStream.write(bytes);
+      outputStream.close();
+
+      promise.resolve(ret);
     } catch (Exception ex) {
       ex.printStackTrace();
       filereject(promise, filepath, ex);
