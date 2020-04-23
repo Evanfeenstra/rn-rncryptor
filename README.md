@@ -12,32 +12,21 @@ and [Ruby](https://github.com/RNCryptor/ruby_rncryptor).
 
 ## Usage
 ```javascript
-import RNCryptor from 'react-native-rncryptor';
+import RNCryptor from 'rn-rncryptor';
 
-RNCryptor.encrypt('a text', 'password').then((encryptedbase64)=>{
-  console.log(encryptedbase64)
-}).catch((error)=>{
-  console.log(error)
-})
+RNCryptor.encrypt('a text', 'password')
 
-RNCryptor.encryptFromBase64('a base64 string', 'password').then((encryptedbase64)=>{
-  console.log(encryptedbase64)
-}).catch((error)=>{
-  console.log(error)
-})
+RNCryptor.encryptFromBase64('a base64 string', 'password')
 
-RNCryptor.decrypt('encrypted base64', 'password').then((plaintext)=>{
-  console.log(plaintext)
-}).catch((error)=>{
-  console.log(error)
-})
+RNCryptor.decrypt('encrypted base64', 'password')
 
-RNCryptor.decryptToBase64('encrypted base64', 'password').then((plaintextBase64)=>{
-  console.log(plaintextBase64)
-}).catch((error)=>{
-  console.log(error)
-})
+RNCryptor.decryptToBase64('encrypted base64', 'password')
+
+RNCryptor.encryptFile('pathname','pwd')
+
+RNCryptor.readEncryptedFile('filepath', 'pwd')
+
+RNCryptor.decryptFileAndSave('filepath', 'pwd', 'extension')
+
+RNCryptor.decryptFileAndSaveReturningContent('filepath', 'pwd', 'extension')
 ```
-
-## License
-MIT
